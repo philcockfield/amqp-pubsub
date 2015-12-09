@@ -1,6 +1,6 @@
-# amqp-pubsub
+# mq-pubsub
 
-[![Build Status](https://travis-ci.org/philcockfield/amqp-pubsub.svg)](https://travis-ci.org/philcockfield/amqp-pubsub)
+[![Build Status](https://travis-ci.org/philcockfield/mq-pubsub.svg)](https://travis-ci.org/philcockfield/mq-pubsub)
 
 Pub/sub pattern wrapped around `amqplib`.
 

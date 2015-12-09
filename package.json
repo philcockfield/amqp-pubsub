@@ -1,5 +1,5 @@
 {
-  "name": "amqp-pubsub",
+  "name": "mq-pubsub",
   "version": "0.0.1",
   "description": "Pub/sub pattern wrapped around `amqplib`.",
   "main": "./lib/index.js",
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/philcockfield/amqp-pubsub"
+    "url": "https://github.com/philcockfield/mq-pubsub"
   },
   "keywords": [
     "amqp,rabbitmq,pub,sub"
@@ -35,6 +35,6 @@
     "email": "phil@cockfield.net",
     "url": "https://github.com/philcockfield"
   },
-  "homepage": "https://github.com/philcockfield/amqp-pubsub",
+  "homepage": "https://github.com/philcockfield/mq-pubsub",
   "license": "MIT"
 }
