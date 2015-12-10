@@ -1,5 +1,4 @@
 import R from "ramda";
-import polyfill from "babel-polyfill"; // NB: Required for ES6 generators.
 import Promise from "bluebird";
 import connect from "mq-connection";
 import api from "./api";
