@@ -2,28 +2,32 @@
   "name": "mq-pubsub",
   "version": "0.0.1",
   "description": "Pub/sub pattern for microservices using RabbitMQ.",
-  "main": "./lib/index.js",
+  "main": "./lib/main.js",
   "scripts": {
-    "start": "node .",
-    "watch": "nodemon . -e js,jsx --ignore .build",
+    "pub": "node ./example/pub.js",
+    "sub": "node ./example/sub.js",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
+    "dmq": "docker run -it -p 5672:5672 rabbitmq:latest",
     "prepublish": "gulp lint && gulp build"
   },
   "dependencies": {
+    "amqplib": "^0.4.0",
+    "babel-polyfill": "^6.3.14",
+    "bluebird": "^3.0.6",
     "mq-connection": "^1.0.0"
   },
   "devDependencies": {
     "babel": "^5.6.14",
     "babel-core": "^5.6.18",
     "babel-eslint": "^3.1.23",
-    "gulp": "^3.9.0",
-    "gulp-eslint": "^0.15.0",
-    "gulp-babel": "^5.2.0",
-    "gulp-plumber": "^1.0.1",
+    "chai": "^2.2.0",
     "eslint": "^0.24.1",
-    "mocha": "^2.2.1",
-    "chai": "^2.2.0"
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.0",
+    "gulp-eslint": "^0.15.0",
+    "gulp-plumber": "^1.0.1",
+    "mocha": "^2.2.1"
   },
   "repository": {
     "type": "git",
