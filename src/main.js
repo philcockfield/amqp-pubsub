@@ -26,11 +26,9 @@ export default (url, event) => {
     throw new Error("An `event` name must be specified.");
   }
 
-
   return new Promise((resolve, reject) => {
     Promise.coroutine(function*() {
         try {
-
           // Connect to the server (or used cached connection)
           // then setup the pub/sub pattern.
           const connection = yield connect(url);
@@ -39,7 +37,7 @@ export default (url, event) => {
           // Create the exchange, using the `event` as the exchange name.
           channel.assertExchange(event, "fanout", { durable: false });
 
-          // Finish up.
+          // Return the pub/sub API.
           resolve(api(event, channel));
 
         } catch (err) {

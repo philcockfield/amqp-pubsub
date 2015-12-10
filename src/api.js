@@ -3,7 +3,6 @@ import Promise from "bluebird";
 
 
 export default (event, channel) => {
-
   let isListening = false;
   const listen = (handler) => {
         isListening = true;
@@ -15,7 +14,7 @@ export default (event, channel) => {
       };
 
 
-  const onMessage = (msg) => {
+  const onEvent = (msg) => {
       let payload;
       payload = JSON.parse(msg.content.toString());
 
@@ -37,7 +36,7 @@ export default (event, channel) => {
      */
     subscribe(func) {
       if (R.is(Function, func)) {
-        if (!isListening) { listen(onMessage); }
+        if (!isListening) { listen(onEvent); }
 
         // TODO: Store handler func.
 
