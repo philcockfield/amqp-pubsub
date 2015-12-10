@@ -1,7 +1,7 @@
 "use strict";
 import { expect } from "chai";
 
-describe("amqp-pubsub tests", () => {
+describe("mq-pubsub, () => {
   it("succeeds", () => {
     expect(123).to.equal(123);
   });
