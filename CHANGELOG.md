@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 #### Added
+- Initialization with promised based connection to RabbitMQ
+- Event API
+- Subscribe
+- Publish
 #### Changed
 #### Deprecated
 #### Removed
