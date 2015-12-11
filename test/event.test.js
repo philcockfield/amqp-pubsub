@@ -100,6 +100,20 @@ describe("Event (manager)", function() {
         });
     });
 
-    it.skip("publishes no data (undefined)", () => {});
+    it("publishes no data (undefined)", (done) => {
+      const event = pubsub.event("myEvent");
+      let channel;
+      event.ready()
+        .then(() => {
+            channel = fakeConnection.test.channels[0];
+            return event.publish();
+        })
+        .then(() => {
+            const args = channel.test.publish[0];
+            const payload = JSON.parse(args.content.toString());
+            expect(payload.data).to.eql(undefined);
+            done();
+        });
+    });
   });
 });
