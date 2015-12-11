@@ -112,7 +112,7 @@ export default (event, connecting) => {
         initializing
           .then(channel => {
               channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
-              resolve({ exchange: EXCHANGE_NAME, payload });
+              resolve({ published: true, payload });
           })
           .catch(err => reject(err));
       });
