@@ -13,9 +13,21 @@ import Promise from "bluebird";
 export default (event, connecting) => {
 
   // Ensure an event name was specified.
-  if (R.isNil(event) || R.isEmpty(event)) {
-    throw new Error("An `event` name must be specified.");
-  }
+  if (R.isNil(event) || R.isEmpty(event)) { throw new Error("An `event` name must be specified."); }
+  const EXCHANGE_NAME = `pub-sub:${ event }`;
+
+  // Setup the channel and exchange.
+  const initializing = new Promise((resolve, reject) => {
+        let channel;
+        connecting
+          .then(result => {
+              channel = result;
+              channel.assertExchange(EXCHANGE_NAME, "fanout", { durable: false });
+          })
+          .then(() => resolve(channel))
+          .catch(err => reject(err));
+      });
+
 
   // let isListening = false;
   // const listen = (handler) => {
@@ -39,12 +51,34 @@ export default (event, connecting) => {
   //   };
   //
 
-
+// new Promise((resolve, reject) => {
+//     initializing
+//       .then(result => {
+//           api.isReady = true;
+//           resolve({ isReady: true });
+//       })
+//       .catch(err => {
+//           api.connectionError = err;
+//           reject(err);
+//       });
+//   })
 
   // API.
   const api = {
     name: event,
     isReady: false,
+
+    /**
+     * A {Promise} that can be used to determine when the event
+     * is ready to be interacted with.
+     */
+     ready() {
+      return new Promise((resolve, reject) => {
+          initializing
+            .then(() => resolve({ isReady: true }))
+            .catch(err => reject(err));
+        });
+     },
 
 
     /**
@@ -63,20 +97,34 @@ export default (event, connecting) => {
 
     /**
      * Broadcasts an event to all listeners.
+     *
      * @param {Object} data: The JSON serializable data to broadcast.
+     *
+     * @return {Promise} that yields when the data has been published
+     *                   which will be delayed until the connection is
+     *                   established with the server.
      */
-    // publish(data) {
-    //   const payload = JSON.stringify({ event, data });
-    //   const ROUTING_KEY = "";
-    //   channel.publish(event, ROUTING_KEY, new Buffer(payload));
-    // }
+    publish(data) {
+      const payload = { event, data };
+      const json = JSON.stringify(payload);
+      const ROUTING_KEY = "";
+      return new Promise((resolve, reject) => {
+        initializing
+          .then(channel => {
+              channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
+              resolve({ exchange: EXCHANGE_NAME, payload });
+          })
+          .catch(err => reject(err));
+      });
+    }
   };
 
   // Store connection state.
-  connecting
-    .then(result => api.isReady = true)
+  initializing
+    .then(() => api.isReady = true)
     .catch(err => api.connectionError = err);
 
 
+  // Finish up.
   return api;
 };

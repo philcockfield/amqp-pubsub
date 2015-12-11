@@ -22,30 +22,35 @@ export default (url) => {
 
   // Make connection with the RabbitMQ server.
   const connecting = new Promise((resolve, reject) => {
-      Promise.coroutine(function*() {
-          try {
-            // Connect to the server (or used cached connection)
-            // then setup the pub/sub pattern.
-            connection = yield connect(url);
-            channel = yield connection.createChannel();
-
-            // Create the exchange, using the `event` as the exchange name.
-            // yield channel.assertExchange(event, "fanout", { durable: false });
-
-            // Return the pub/sub API.
-            resolve({ channel });
-
-          } catch (err) {
-            reject(err);
-          }
-
-      }).call(this);
+      connect(url)
+        .then(conn => {
+            connection = conn;
+            return connection.createChannel();
+        })
+        .then(ch => {
+            channel = ch;
+            resolve(channel);
+        })
+        .catch(err => reject(err));
     });
 
 
     // Main API.
     const api = {
       isReady: false,
+
+      /**
+       * A {Promise} that can be used to determine when the event
+       * is ready to be interacted with.
+       */
+       ready() {
+        return new Promise((resolve, reject) => {
+            connecting
+              .then(() => resolve({ isReady: true }))
+              .catch(err => reject(err));
+          });
+       },
+
 
       /**
        * Retrieves an pub/sub manager for a single event.
@@ -64,26 +69,4 @@ export default (url) => {
 
     // Finish up.
     return api;
-
-
-  // return new Promise((resolve, reject) => {
-  //   Promise.coroutine(function*() {
-  //       try {
-  //         // Connect to the server (or used cached connection)
-  //         // then setup the pub/sub pattern.
-  //         const connection = yield connect(url);
-  //         const channel = yield connection.createChannel();
-  //
-  //         // Create the exchange, using the `event` as the exchange name.
-  //         yield channel.assertExchange(event, "fanout", { durable: false });
-  //
-  //         // Return the pub/sub API.
-  //         resolve(api(event, channel));
-  //
-  //       } catch (err) {
-  //         reject(err);
-  //       }
-  //
-  //   }).call(this);
-  // });
 };

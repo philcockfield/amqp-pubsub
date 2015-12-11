@@ -29,8 +29,8 @@ describe("Main (API)", function() {
   it("isReady when connection completes", (done) => {
     const pubsub = factory(URL);
     expect(pubsub.isReady).to.equal(false);
-    delay(10, () => {
-        expect(pubsub.isReady).to.equal(true);
+    pubsub.ready().then(result => {
+        expect(result.isReady).to.equal(true);
         done();
     });
   });
