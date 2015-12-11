@@ -42,6 +42,23 @@ myEvent.publish({ foo: 123 });
 These methods can be used immediately without waiting for the connection to complete.  The module manages the connection state internally, and pushes publishes events when the connection is established.
 
 
+## Example
+Look in the `/example` folder, you will need to change the `amqp://` URL to your RabbitMQ server.
+
+Start one or more consoles as subscribed listeners:
+
+```bash
+npm run sub
+```
+
+Then run the the publish script, optionally passing the number of events to fire:
+
+```bash
+npm run pub     # Fires one event.
+npm run pub 15  # Fires 15 events.
+```
+
+
 ## Tests
 
     npm test
