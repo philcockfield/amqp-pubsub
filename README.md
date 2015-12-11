@@ -28,7 +28,7 @@ Create individual event-managers by passing the event's name to the `event` meth
 const myEvent = pubsub.event("my-event");
 ```
 
-To listen to events pass the `subscribe` method a handler:
+To listen to events pass data to the `subscribe` method a handler:
 
 ```js
 myEvent.subscribe(data => {
