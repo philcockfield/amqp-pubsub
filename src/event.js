@@ -29,39 +29,37 @@ export default (event, connecting) => {
       });
 
 
-  // let isListening = false;
-  // const listen = (handler) => {
-  //       isListening = true;
-  //       Promise.coroutine(function*() {
-  //           const q = channel.assertQueue("", { exchangeclusive: true });
-  //           channel.bindQueue(q.queue, event, "");
-  //           channel.consume(q.queue, handler, { noAck: true });
-  //       }).call(this);
-  //     };
-  //
-  //
-  // const onEvent = (msg) => {
-  //     let payload;
-  //     payload = JSON.parse(msg.content.toString());
-  //
-  //     // TODO: Invoke handlers.
-  //     console.log("payload", payload);
-  //     // console.log("");
-  //
-  //   };
-  //
+  let isListening = false;
+  const listen = (handler) => {
+        isListening = true;
+        return new Promise((resolve, reject) => {
+          Promise.coroutine(function*() {
+              try {
 
-// new Promise((resolve, reject) => {
-//     initializing
-//       .then(result => {
-//           api.isReady = true;
-//           resolve({ isReady: true });
-//       })
-//       .catch(err => {
-//           api.connectionError = err;
-//           reject(err);
-//       });
-//   })
+                const channel = yield initializing;
+                const q = yield channel.assertQueue("", { exchangeclusive: true });
+                yield channel.bindQueue(q.queue, EXCHANGE_NAME, "");
+                yield channel.consume(q.queue, handler, { noAck: true });
+                resolve({});
+
+              } catch (err) { reject(err); }
+          }).call(this);
+        });
+      };
+
+
+
+  const onEvent = (msg) => {
+      let payload;
+      payload = JSON.parse(msg.content.toString());
+
+      // TODO: Invoke handlers.
+      console.log("payload", payload);
+      // console.log("");
+
+    };
+
+
 
   // API.
   const api = {
@@ -85,15 +83,24 @@ export default (event, connecting) => {
      * Listens for the event.
      * @param {Function} func: The function to invoke when events are published.
      */
-    // subscribe(func) {
-    //   if (R.is(Function, func)) {
-    //     if (!isListening) { listen(onEvent); }
-    //
-    //     // TODO: Store handler func.
-    //
-    //   }
-    // },
-    //
+    subscribe(func) {
+      return new Promise((resolve, reject) => {
+        Promise.coroutine(function*() {
+            if (R.is(Function, func)) {
+              try {
+                // Ensure the channel is being listened to.
+                if (!isListening) { yield listen(onEvent); }
+
+                // TODO: -- store handlers.
+
+                // Finish up.
+                resolve({});
+              } catch (err) { reject(err); }
+            }
+        }).call(this);
+      });
+    },
+
 
     /**
      * Broadcasts an event to all listeners.
@@ -113,6 +120,14 @@ export default (event, connecting) => {
               const ROUTING_KEY = "";
               channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
               resolve({ published: true, payload });
+
+              // TEMP
+              // const q = channel.bindQueue("my-queue", "source", "pattern");
+              // // console.log("q", q);
+              // // console.log("q.then", q.then);
+              // q.then(result => {
+              //   console.log("result", result);
+              // })
           })
           .catch(err => reject(err));
       });

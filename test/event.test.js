@@ -64,7 +64,16 @@ describe("Event (manager)", function() {
     });
 
 
-    it.skip("fails on subscription if there is a connection error", () => {});
+    it("fails on subscription if there is a connection error", (done) => {
+      const event = factory(URL).event("myEvent");
+      delay(10, () => {
+          event.subscribe((msg) => true)
+            .catch(err => {
+                expect(err).to.equal(CONNECTION_ERROR);
+                done();
+            });
+      });
+    });
 
 
     it("fails on publish if there is a connection error", (done) => {
@@ -112,6 +121,36 @@ describe("Event (manager)", function() {
             const args = channel.test.publish[0];
             const payload = JSON.parse(args.content.toString());
             expect(payload.data).to.eql(undefined);
+            done();
+        });
+    });
+  });
+
+
+  describe("subscribe", function() {
+    it("subscribes to an event", (done) => {
+      const event = pubsub.event("myEvent");
+      let channel;
+      const fn = (msg) => {};
+      event.ready()
+        .then(() => {
+            channel = fakeConnection.test.channels[0];
+
+            // Channel has not yet been setup.
+            expect(channel.test.assertQueue.length).to.equal(0);
+            expect(channel.test.bindQueue.length).to.equal(0);
+            expect(channel.test.consume.length).to.equal(0);
+
+            return event.subscribe(fn);
+        })
+        .then(result => {
+
+            // Ensure the channel has been setup.
+            expect(channel.test.assertQueue.length).to.equal(1);
+            expect(channel.test.bindQueue.length).to.equal(1);
+            expect(channel.test.consume.length).to.equal(1);
+
+            expect(result).to.eql({});
             done();
         });
     });
