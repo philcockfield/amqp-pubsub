@@ -4,6 +4,9 @@
 
 Pub/sub pattern for microservices using RabbitMQ.
 
+See also:
+- [mq-connection](https://github.com/philcockfield/mq-connection)
+
 
 ## Installation
 
