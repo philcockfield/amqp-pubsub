@@ -2,6 +2,7 @@ import R from "ramda";
 import Promise from "bluebird";
 
 
+
 /**
  * Factory for creating a single pub/sub event.
  *
@@ -11,6 +12,7 @@ import Promise from "bluebird";
  * @return {Object} event API.
  */
 export default (event, connecting) => {
+  const subscriptionHandlers = [];
 
   // Ensure an event name was specified.
   if (R.isNil(event) || R.isEmpty(event)) { throw new Error("An `event` name must be specified."); }
@@ -52,11 +54,7 @@ export default (event, connecting) => {
   const onEvent = (msg) => {
       let payload;
       payload = JSON.parse(msg.content.toString());
-
-      // TODO: Invoke handlers.
-      console.log("payload", payload);
-      // console.log("");
-
+      subscriptionHandlers.forEach(func => func(payload.data));
     };
 
 
@@ -91,7 +89,8 @@ export default (event, connecting) => {
                 // Ensure the channel is being listened to.
                 if (!isListening) { yield listen(onEvent); }
 
-                // TODO: -- store handlers.
+                // Store the handler.
+                subscriptionHandlers.push(func);
 
                 // Finish up.
                 resolve({});
@@ -120,14 +119,6 @@ export default (event, connecting) => {
               const ROUTING_KEY = "";
               channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
               resolve({ published: true, payload });
-
-              // TEMP
-              // const q = channel.bindQueue("my-queue", "source", "pattern");
-              // // console.log("q", q);
-              // // console.log("q.then", q.then);
-              // q.then(result => {
-              //   console.log("result", result);
-              // })
           })
           .catch(err => reject(err));
       });

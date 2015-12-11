@@ -1,25 +1,7 @@
-var pubsub = require("../");
+const pubsub = require("../")("amqp://docker");
+const myEvent = pubsub.event("MyEvent");
 
-// amqp://guest:guest@dev.rabbitmq.com
-pubsub("amqp://docker", "my-event").then(event => {
-
-  console.log("Listening for events...\n");
-
-  event.subscribe(data => {
-    console.log("data", data);
-  });
-
-
+console.log("Listening for events...\n");
+myEvent.subscribe(data => {
+    console.log(" [-]", data);
 });
-
-//
-// pubsub("amqp://docker", "event-2").then(event => {
-//   event.subscribe(data => {
-//     console.log("event-2 ::: ", data);
-//   });
-//
-//
-// });
-
-
-pubsub("amqp://docker").event("my-event")

@@ -1,5 +1,4 @@
-var factory = require("../");
-const pubsub = factory("amqp://docker")
+const pubsub = require("../")("amqp://docker");
 
 
 const myEvent = pubsub.event("MyEvent");
