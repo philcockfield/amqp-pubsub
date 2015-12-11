@@ -1,6 +1,6 @@
 # mq-pubsub
 
-![Build Status](https://travis-ci.org/philcockfield/mq-pubsub.svg)](https://travis-ci.org/philcockfield/mq-pubsub)
+[![Build Status](https://travis-ci.org/philcockfield/mq-connection.svg?branch=master)](https://travis-ci.org/philcockfield/mq-connection)
 
 Pub/sub pattern for microservices using RabbitMQ.
 
