@@ -124,7 +124,6 @@ export default (event, connecting) => {
     .then(() => api.isReady = true)
     .catch(err => api.connectionError = err);
 
-
   // Finish up.
   return api;
 };

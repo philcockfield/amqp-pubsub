@@ -46,25 +46,37 @@ describe("Event (manager)", function() {
 
 
   describe("connection failures", function() {
-    const err = new Error("Connection Fail!");
+    const CONNECTION_ERROR = new Error("Connection Fail!");
     beforeEach(() => {
       // Override the connect method to force failure.
       connect.reset();
-      connect.connect = () => new Promise((resolve, reject) => reject(err));
+      connect.connect = () => new Promise((resolve, reject) => reject(CONNECTION_ERROR));
     });
+
 
     it("reports connection error (isReady: false)", (done) => {
       const event = factory(URL).event("myEvent");
       delay(10, () => {
           expect(event.isReady).to.equal(false);
-          expect(event.connectionError).to.equal(err);
+          expect(event.connectionError).to.equal(CONNECTION_ERROR);
           done();
       });
     });
 
-    it.skip("fails on subscription if there is a connection error", () => {});
-    it.skip("fails on publish if there is a connection error", () => {});
 
+    it.skip("fails on subscription if there is a connection error", () => {});
+
+
+    it("fails on publish if there is a connection error", (done) => {
+      const event = factory(URL).event("myEvent");
+      delay(10, () => {
+          event.publish({ foo:123 })
+            .catch(err => {
+                expect(err).to.equal(CONNECTION_ERROR);
+                done();
+            });
+      });
+    });
   });
 
 
@@ -72,21 +84,22 @@ describe("Event (manager)", function() {
     it("publishes an event", (done) => {
       const event = pubsub.event("myEvent");
       let channel;
-
       event.ready()
         .then(() => {
-          channel = fakeConnection.test.channels[0];
-          return event.publish({ foo: 123 });
+            channel = fakeConnection.test.channels[0];
+            return event.publish({ foo: 123 });
         })
         .then(() => {
-          const args = channel.test.publish[0];
-          const payload = JSON.parse(args.content.toString());
-          expect(args.exchange).to.equal("pub-sub:myEvent");
-          expect(args.routingKey).to.equal("");
-          expect(payload.event).to.equal("myEvent");
-          expect(payload.data).to.eql({ foo: 123 });
-          done();
+            const args = channel.test.publish[0];
+            const payload = JSON.parse(args.content.toString());
+            expect(args.exchange).to.equal("pub-sub:myEvent");
+            expect(args.routingKey).to.equal("");
+            expect(payload.event).to.equal("myEvent");
+            expect(payload.data).to.eql({ foo: 123 });
+            done();
         });
     });
+
+    it.skip("publishes no data (undefined)", () => {});
   });
 });
