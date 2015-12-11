@@ -105,12 +105,12 @@ export default (event, connecting) => {
      *                   established with the server.
      */
     publish(data) {
-      const payload = { event, data };
-      const json = JSON.stringify(payload);
-      const ROUTING_KEY = "";
       return new Promise((resolve, reject) => {
         initializing
           .then(channel => {
+              const payload = { event, data };
+              const json = JSON.stringify(payload);
+              const ROUTING_KEY = "";
               channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
               resolve({ published: true, payload });
           })
