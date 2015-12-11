@@ -1,4 +1,6 @@
-var pubsub = require("../lib/main");
+var pubsub = require("../");
+
+
 
 pubsub("amqp://docker", "my-event").then(event => {
 
@@ -8,6 +10,17 @@ pubsub("amqp://docker", "my-event").then(event => {
   event.publish(1);
   event.publish("harry");
 
-  setTimeout(function() { process.exit(0) }, 300)
+  // setTimeout(function() { process.exit(0) }, 300)
+
+});
+
+
+
+
+pubsub("amqp://docker", "event-2").then(event => {
+
+  event.publish({ foo: "event2" });
+
+  // setTimeout(function() { process.exit(0) }, 300)
 
 });

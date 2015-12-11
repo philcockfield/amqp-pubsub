@@ -1,4 +1,4 @@
-var pubsub = require("../lib/main");
+var pubsub = require("../");
 
 // amqp://guest:guest@dev.rabbitmq.com
 pubsub("amqp://docker", "my-event").then(event => {
@@ -11,3 +11,15 @@ pubsub("amqp://docker", "my-event").then(event => {
 
 
 });
+
+//
+// pubsub("amqp://docker", "event-2").then(event => {
+//   event.subscribe(data => {
+//     console.log("event-2 ::: ", data);
+//   });
+//
+//
+// });
+
+
+pubsub("amqp://docker").event("my-event")
