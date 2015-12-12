@@ -29,7 +29,7 @@ if (events[eventName]) {
   Promise.all(promises)
     .then(() => {
       console.log("");
-      setTimeout(() => process.exit(0), 200);
+      setTimeout(() => process.exit(0), 500);
     })
 
 } else {
