@@ -115,7 +115,9 @@ describe("Event (manager)", function() {
       event.ready()
         .then(() => {
             channel = fakeConnection.test.channels[0];
-            return event.publish();
+            const promise = event.publish();
+            expect(promise.then).to.be.an.instanceof(Function);
+            return promise;
         })
         .then(() => {
             const args = channel.test.publish[0];
@@ -141,7 +143,9 @@ describe("Event (manager)", function() {
             expect(channel.test.bindQueue.length).to.equal(0);
             expect(channel.test.consume.length).to.equal(0);
 
-            return event.subscribe(fn);
+            const promise = event.subscribe(fn);
+            expect(promise.then).to.be.an.instanceof(Function);
+            return promise;
         })
         .then(result => {
 

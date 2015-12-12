@@ -3,13 +3,35 @@ const Promise = require("bluebird");
 const pubsub = require("../")("amqp://docker");
 
 
+
+const publish = (event, index) => {
+    const data = { number: index + 1 };
+    console.log(` [-] Published event '${ event.name }' with data:`, data);
+    event.publish(data)
+  };
+
+
 // Create the event.
-const myEvent = pubsub.event("MyEvent");
-const publish = (index) => myEvent.publish({ event: index + 1 });
+const events = {
+  foo: pubsub.event("foo"),
+  bar: pubsub.event("bar")
+};
 
 
-// Read in the command-line args, to determine how many events to fire.
-// eg. `npm run pub ...` will fire 3 events.
-const args = process.argv.slice(2).join(" ");
-const count = parseInt(args) || 1;
-R.times(publish, count);
+// Read in the command-line args, to determine which event to fire
+// and how many events to fire it.
+const args = process.argv.slice(2);
+const eventName = args[0] || "foo";
+const count = parseInt(args[1]) || 1;
+
+if (events[eventName]) {
+  const promises = R.times((index) => publish(events[eventName], index), count);
+  Promise.all(promises)
+    .then(() => {
+      console.log("");
+      setTimeout(() => process.exit(0), 200);
+    })
+
+} else {
+  console.log(`Event named '${ eventName }' does not exist.\n`);
+}
