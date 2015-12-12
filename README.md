@@ -28,7 +28,7 @@ Create individual event-managers by passing the event's name to the `event` meth
 const myEvent = pubsub.event("my-event");
 ```
 
-To listen to events, pass a handler to the `subscribe` method:
+To listen for events, pass a handler to the `subscribe` method:
 
 ```js
 myEvent.subscribe(data => {
@@ -37,13 +37,13 @@ myEvent.subscribe(data => {
 
 ```
 
-To publish events, use the `publish` method:
+To publish events, push data to the `publish` method:
 
 ```js
 myEvent.publish({ foo: 123 });
 ```
 
-These methods can be used immediately without waiting for the connection to complete.  The module manages the connection state internally, and publishes the events when the connection is ready.
+These methods can be used immediately without waiting for the connection to complete.  The module manages the connection state internally, and buffers events until the RabbitMQ connection is ready.
 
 
 ## Example
