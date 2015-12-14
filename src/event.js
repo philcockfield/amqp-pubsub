@@ -7,7 +7,7 @@ import Promise from "bluebird";
  * Factory for creating a single pub/sub event.
  *
  * @param {String}  event:      The name of the event.
- * @param {Promise} connecting: A promise that returns the channel to work with.
+ * @param {Promise} connecting: A promise that yields the channel to work with.
  *
  * @return {Object} event API.
  */
@@ -38,13 +38,24 @@ export default (event, connecting) => {
           Promise.coroutine(function*() {
               try {
 
+                // Note:  The queue will be deleted when the connection closes
+                //        due to the { exclusive: true } setting.
                 const channel = yield initializing;
-                const q = yield channel.assertQueue("", { exchangeclusive: true });
-                yield channel.bindQueue(q.queue, EXCHANGE_NAME, "");
-                yield channel.consume(q.queue, handler, { noAck: true });
+                const q = yield channel.assertQueue("", { exclusive: true });
+
+                const QUEUE_NAME = q.queue;
+                const PATTERN = "";
+
+                yield channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, PATTERN);
+                yield channel.consume(QUEUE_NAME, handler, { noAck: true });
+
+                // Finish up.
                 resolve({});
 
-              } catch (err) { reject(err); }
+              } catch (err) {
+                isListening = false;
+                reject(err);
+              }
           }).call(this);
         });
       };
