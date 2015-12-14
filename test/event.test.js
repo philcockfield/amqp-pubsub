@@ -1,7 +1,7 @@
 "use strict";
 import { expect } from "chai";
 import connect from "mq-connection";
-import factory from "../src/main";
+import pubsubFactory from "../src/main";
 
 const URL = "amqp://rabbitmq";
 const delay = (msecs, func) => setTimeout(func, msecs);
@@ -12,7 +12,7 @@ describe("Event (manager)", function() {
   beforeEach(() => {
     connect.reset();
     fakeConnection = connect.fake();
-    pubsub = factory(URL);
+    pubsub = pubsubFactory(URL);
   });
   afterEach(() => connect.real());
 
@@ -55,7 +55,7 @@ describe("Event (manager)", function() {
 
 
     it("reports connection error (isReady: false)", (done) => {
-      const event = factory(URL).event("myEvent");
+      const event = pubsubFactory(URL).event("myEvent");
       delay(10, () => {
           expect(event.isReady).to.equal(false);
           expect(event.connectionError).to.equal(CONNECTION_ERROR);
@@ -65,7 +65,7 @@ describe("Event (manager)", function() {
 
 
     it("fails on subscription if there is a connection error", (done) => {
-      const event = factory(URL).event("myEvent");
+      const event = pubsubFactory(URL).event("myEvent");
       delay(10, () => {
           event.subscribe((msg) => true)
             .catch(err => {
@@ -77,7 +77,7 @@ describe("Event (manager)", function() {
 
 
     it("fails on publish if there is a connection error", (done) => {
-      const event = factory(URL).event("myEvent");
+      const event = pubsubFactory(URL).event("myEvent");
       delay(10, () => {
           event.publish({ foo:123 })
             .catch(err => {

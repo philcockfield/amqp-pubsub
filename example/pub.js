@@ -1,7 +1,9 @@
 const R = require("ramda");
 const Promise = require("bluebird");
-const pubsub = require("../")("amqp://docker");
 
+const URL = "amqp://docker";
+console.log(`Server: ${ URL }\n`);
+const pubsub = require("../")(URL);
 
 
 const publish = (event, index) => {
@@ -29,7 +31,7 @@ if (events[eventName]) {
   Promise.all(promises)
     .then(() => {
       console.log("");
-      setTimeout(() => process.exit(0), 500);
+      // setTimeout(() => process.exit(0), 500);
     })
 
 } else {

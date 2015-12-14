@@ -18,8 +18,8 @@ See also:
 Initialize a connection to a RabbitMQ server:
 
 ```js
-import factory from "mq-pubsub";
-const pubsub = factory("amqp://rabbitmq");
+import pubsubFactory from "mq-pubsub";
+const pubsub = pubsubFactory("amqp://rabbitmq");
 ```
 
 Create individual event-managers by passing the event's name to the `event` method:
@@ -77,7 +77,7 @@ Look in the `/example` folder, you will need to change the "`amqp://`" URL in th
 
 ## Docker Commands
 
-    docker run -it -p 5672:5672 rabbitmq:latest
+    docker run -it -p 5672:5672 rabbitmq
 
 
 ---

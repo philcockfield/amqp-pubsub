@@ -1,7 +1,7 @@
 "use strict";
 import { expect } from "chai";
 import connect from "mq-connection";
-import factory from "../src/main";
+import pubsubFactory from "../src/main";
 
 const URL = "amqp://rabbitmq";
 const delay = (msecs, func) => setTimeout(func, msecs);
@@ -16,18 +16,18 @@ describe("Main (API)", function() {
 
 
   it("throws if a URL was not specified", () => {
-    expect(() => factory()).to.throw();
-    expect(() => factory("")).to.throw();
+    expect(() => pubsubFactory()).to.throw();
+    expect(() => pubsubFactory("")).to.throw();
   });
 
 
   it("throws if the URL does not start with 'amqp://' or 'amqps://", () => {
-    expect(() => factory("fail")).to.throw();
+    expect(() => pubsubFactory("fail")).to.throw();
   });
 
 
   it("isReady when connection completes", (done) => {
-    const pubsub = factory(URL);
+    const pubsub = pubsubFactory(URL);
     expect(pubsub.isReady).to.equal(false);
     pubsub.ready().then(result => {
         expect(result.isReady).to.equal(true);
@@ -40,7 +40,7 @@ describe("Main (API)", function() {
     // Override the connect method to force it to fail.
     const err = new Error("Fail!");
     connect.connect = () => new Promise((resolve, reject) => reject(err));
-    const pubsub = factory(URL);
+    const pubsub = pubsubFactory(URL);
     delay(10, () => {
       expect(pubsub.isReady).to.equal(false);
       expect(pubsub.connectionError).to.equal(err);
