@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] - YYYY-MM-DD
 #### Added
 #### Changed
+- Improved error messages when failing to `publish` or `subscribe` on an event.
+
 #### Deprecated
 #### Removed
 #### Fixed

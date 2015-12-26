@@ -105,7 +105,12 @@ export default (event, connecting) => {
 
                 // Finish up.
                 resolve({});
-              } catch (err) { reject(err); }
+
+              } catch (e) {
+                const err = new Error(`Failed to subscribe to event '${ api.name }'. ${ e.message }`);
+                err.details = e;
+                reject(err);
+              }
             }
         }).call(this);
       });
@@ -130,8 +135,13 @@ export default (event, connecting) => {
               const ROUTING_KEY = "";
               channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
               resolve({ published: true, payload });
+
           })
-          .catch(err => reject(err));
+          .catch(e => {
+            const err = new Error(`Failed to publish event '${ api.name }'. ${ e.message }`);
+            err.details = e;
+            reject(err);
+          });
       });
     }
   };

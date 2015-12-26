@@ -69,7 +69,8 @@ describe("Event (manager)", function() {
       delay(10, () => {
           event.subscribe((msg) => true)
             .catch(err => {
-                expect(err).to.equal(CONNECTION_ERROR);
+                expect(err.message).to.contain("Failed to subscribe to event 'myEvent'.");
+                expect(err.details).to.eql(CONNECTION_ERROR);
                 done();
             });
       });
@@ -81,7 +82,8 @@ describe("Event (manager)", function() {
       delay(10, () => {
           event.publish({ foo:123 })
             .catch(err => {
-                expect(err).to.equal(CONNECTION_ERROR);
+                expect(err.message).to.contain("Failed to publish event 'myEvent'.");
+                expect(err.details).to.eql(CONNECTION_ERROR);
                 done();
             });
       });
