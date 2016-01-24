@@ -1,6 +1,6 @@
 {
   "name": "mq-pubsub",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Pub/sub pattern for microservices using RabbitMQ.",
   "main": "./index.js",
   "scripts": {
