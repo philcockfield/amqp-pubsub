@@ -1,5 +1,5 @@
-import R from "ramda";
-import Promise from "bluebird";
+import R from 'ramda';
+import Promise from 'bluebird';
 
 
 
@@ -15,58 +15,57 @@ export default (event, connecting) => {
   const subscriptionHandlers = [];
 
   // Ensure an event name was specified.
-  if (R.isNil(event) || R.isEmpty(event)) { throw new Error("An `event` name must be specified."); }
+  if (R.isNil(event) || R.isEmpty(event)) { throw new Error('An `event` name must be specified.'); }
   const EXCHANGE_NAME = `pub-sub:${ event }`;
 
   // Setup the channel and exchange.
   const initializing = new Promise((resolve, reject) => {
-        let channel;
-        connecting
-          .then(result => {
-              channel = result;
-              channel.assertExchange(EXCHANGE_NAME, "fanout", { durable: false });
-          })
-          .then(() => resolve(channel))
-          .catch(err => reject(err));
-      });
+    let channel;
+    connecting
+      .then(result => {
+        channel = result;
+        channel.assertExchange(EXCHANGE_NAME, 'fanout', { durable: false });
+      })
+      .then(() => resolve(channel))
+      .catch(err => reject(err));
+  });
+
 
 
   let isListening = false;
-  const listen = (handler) => {
-        isListening = true;
-        return new Promise((resolve, reject) => {
-          Promise.coroutine(function*() {
-              try {
+  const listen = (handler) => new Promise((resolve, reject) => {
+    Promise.coroutine(function* await() {
+      isListening = true;
+      try {
 
-                // Note:  The queue will be deleted when the connection closes
-                //        due to the { exclusive: true } setting.
-                const channel = yield initializing;
-                const q = yield channel.assertQueue("", { exclusive: true });
+        // Note:  The queue will be deleted when the connection closes
+        //        due to the { exclusive: true } setting.
+        const channel = yield initializing;
+        const q = yield channel.assertQueue('', { exclusive: true });
 
-                const QUEUE_NAME = q.queue;
-                const PATTERN = "";
+        const QUEUE_NAME = q.queue;
+        const PATTERN = '';
 
-                yield channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, PATTERN);
-                yield channel.consume(QUEUE_NAME, handler, { noAck: true });
+        yield channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, PATTERN);
+        yield channel.consume(QUEUE_NAME, handler, { noAck: true });
 
-                // Finish up.
-                resolve({});
+        // Finish up.
+        resolve({});
 
-              } catch (err) {
-                isListening = false;
-                reject(err);
-              }
-          }).call(this);
-        });
-      };
+      } catch (err) {
+        isListening = false;
+        reject(err);
+      }
+    }).call(this);
+  });
 
 
 
   const onEvent = (msg) => {
-      let payload;
-      payload = JSON.parse(msg.content.toString());
-      subscriptionHandlers.forEach(func => func(payload.data));
-    };
+    let payload;
+    payload = JSON.parse(msg.content.toString());
+    subscriptionHandlers.forEach(func => func(payload.data));
+  };
 
 
 
@@ -79,13 +78,13 @@ export default (event, connecting) => {
      * A {Promise} that can be used to determine when the event
      * is ready to be interacted with.
      */
-     ready() {
+    ready() {
       return new Promise((resolve, reject) => {
-          initializing
-            .then(() => resolve({ isReady: true }))
-            .catch(err => reject(err));
-        });
-     },
+        initializing
+          .then(() => resolve({ isReady: true }))
+          .catch(err => reject(err));
+      });
+    },
 
 
     /**
@@ -94,24 +93,24 @@ export default (event, connecting) => {
      */
     subscribe(func) {
       return new Promise((resolve, reject) => {
-        Promise.coroutine(function*() {
-            if (R.is(Function, func)) {
-              try {
-                // Ensure the channel is being listened to.
-                if (!isListening) { yield listen(onEvent); }
+        Promise.coroutine(function* await() {
+          if (R.is(Function, func)) {
+            try {
+              // Ensure the channel is being listened to.
+              if (!isListening) { yield listen(onEvent); }
 
-                // Store the handler.
-                subscriptionHandlers.push(func);
+              // Store the handler.
+              subscriptionHandlers.push(func);
 
-                // Finish up.
-                resolve({});
+              // Finish up.
+              resolve({});
 
-              } catch (e) {
-                const err = new Error(`Failed to subscribe to event '${ api.name }'. ${ e.message }`);
-                err.details = e;
-                reject(err);
-              }
+            } catch (e) {
+              const err = new Error(`Failed to subscribe to event '${ api.name }'. ${ e.message }`);
+              err.details = e;
+              reject(err);
             }
+          }
         }).call(this);
       });
     },
@@ -130,11 +129,11 @@ export default (event, connecting) => {
       return new Promise((resolve, reject) => {
         initializing
           .then(channel => {
-              const payload = { event, data };
-              const json = JSON.stringify(payload);
-              const ROUTING_KEY = "";
-              channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
-              resolve({ published: true, payload });
+            const payload = { event, data };
+            const json = JSON.stringify(payload);
+            const ROUTING_KEY = '';
+            channel.publish(EXCHANGE_NAME, ROUTING_KEY, new Buffer(json));
+            resolve({ published: true, payload });
 
           })
           .catch(e => {
@@ -143,7 +142,7 @@ export default (event, connecting) => {
             reject(err);
           });
       });
-    }
+    },
   };
 
   // Store connection state.
