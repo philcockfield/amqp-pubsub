@@ -49,24 +49,28 @@ These methods can be used immediately without waiting for the connection to comp
 ## Example
 Look in the `/example` folder, you will need to change the "`amqp://`" URL in the `pub.js` and `sub.js` files to your RabbitMQ server.
 
+By default the examples assume a RabbitMQ server running within docker (on `192.168.99.100`), which you can start with:
+
+    npm run example:up
+
 - **Subscribe:** Start one or more consoles as subscribed listeners to the `"foo"` and `"bar"` events:
 
     ```bash
-    npm run sub
+    npm run example:sub
     ```
 
 - **Publish:** In another console run the publish script:
 
     ```bash
-    npm run pub <event> <total>
+    npm run example:pub <event> <total>
     ```
 
     For example:
 
     ```bash
-    npm run pub           # Fires the "foo" event one time.
-    npm run pub foo 15    # Fires the "foo" event 15 times.
-    npm run pub bar 101   # Fires the "bar" event 101 times.
+    npm run example:pub           # Fires the "foo" event one time.
+    npm run example:pub foo 15    # Fires the "foo" event 15 times.
+    npm run example:pub bar 101   # Fires the "bar" event 101 times.
     ```
 
 

@@ -4,9 +4,9 @@
   "description": "Pub/sub pattern for microservices using RabbitMQ.",
   "main": "./index.js",
   "scripts": {
-    "pub": "node ./example/pub.js",
-    "sub": "node ./example/sub.js",
-    "dmq": "docker run -it -p 5672:5672 rabbitmq:latest",
+    "example:up": "docker-compose -f ./example/docker-compose.yml up",
+    "example:pub": "node ./example/pub.js",
+    "example:sub": "node ./example/sub.js",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel-register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel-register --watch",
     "lint": "eslint ./src",
@@ -15,16 +15,15 @@
     "prepublish": "npm test && npm run lint && npm run build"
   },
   "dependencies": {
-    "amqplib": "^0.4.0",
-    "bluebird": "^3.1.2",
-    "mq-connection": "^1.1.1",
-    "ramda": "^0.19.1"
+    "bluebird": "3.4.0",
+    "mq-connection": "1.1.3",
+    "ramda": "0.21.0"
   },
   "devDependencies": {
-    "chai": "^3.4.1",
-    "js-babel": "^6.0.0",
-    "js-babel-dev": "^6.0.0",
-    "mocha": "^2.2.1"
+    "chai": "3.5.0",
+    "js-babel": "6.0.5",
+    "js-babel-dev": "6.0.6",
+    "mocha": "2.5.3"
   },
   "repository": {
     "type": "git",

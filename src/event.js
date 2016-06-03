@@ -36,27 +36,27 @@ export default (event, connecting) => {
   const listen = (handler) => new Promise((resolve, reject) => {
     (async () => {
 
-        isListening = true;
-        try {
+      isListening = true;
+      try {
 
-          // Note:  The queue will be deleted when the connection closes
-          //        due to the { exclusive: true } setting.
-          const channel = await initializing;
-          const q = await channel.assertQueue('', { exclusive: true });
+        // Note:  The queue will be deleted when the connection closes
+        //        due to the { exclusive: true } setting.
+        const channel = await initializing;
+        const q = await channel.assertQueue('', { exclusive: true });
 
-          const QUEUE_NAME = q.queue;
-          const PATTERN = '';
+        const QUEUE_NAME = q.queue;
+        const PATTERN = '';
 
-          await channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, PATTERN);
-          await channel.consume(QUEUE_NAME, handler, { noAck: true });
+        await channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, PATTERN);
+        await channel.consume(QUEUE_NAME, handler, { noAck: true });
 
-          // Finish up.
-          resolve({});
+        // Finish up.
+        resolve({});
 
-        } catch (err) {
-          isListening = false;
-          reject(err);
-        }
+      } catch (err) {
+        isListening = false;
+        reject(err);
+      }
 
     })();
   });
@@ -96,23 +96,23 @@ export default (event, connecting) => {
       return new Promise((resolve, reject) => {
         (async () => {
 
-            if (R.is(Function, func)) {
-              try {
-                // Ensure the channel is being listened to.
-                if (!isListening) { await listen(onEvent); }
+          if (R.is(Function, func)) {
+            try {
+              // Ensure the channel is being listened to.
+              if (!isListening) { await listen(onEvent); }
 
-                // Store the handler.
-                subscriptionHandlers.push(func);
+              // Store the handler.
+              subscriptionHandlers.push(func);
 
-                // Finish up.
-                resolve({});
+              // Finish up.
+              resolve({});
 
-              } catch (e) {
-                const err = new Error(`Failed to subscribe to event '${api.name}'. ${e.message}`);
-                err.details = e;
-                reject(err);
-              }
+            } catch (e) {
+              const err = new Error(`Failed to subscribe to event '${api.name}'. ${e.message}`);
+              err.details = e;
+              reject(err);
             }
+          }
 
         })();
       });
