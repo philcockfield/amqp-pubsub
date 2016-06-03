@@ -13,6 +13,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+
+## [1.1.2] - 2016-06-03
+#### Changed
+- Updated NPM refs.
+
+#### Fixed
+- Examples (now using docker-compose).
+
+
+
 ## [1.1.0] - 2016-01-25
 #### Changed
 - Improved error messages when failing to `publish` or `subscribe` on an event.
