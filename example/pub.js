@@ -1,9 +1,10 @@
-const R = require("ramda");
-const Promise = require("bluebird");
+const R = require('ramda');
+const Promise = require('bluebird');
 
-const URL = "amqp://docker";
+const URL = 'amqp://192.168.99.100';
+const lib = require('../').default;
+const pubsub = lib(URL);
 console.log(`Server: ${ URL }\n`);
-const pubsub = require("../")(URL);
 
 
 const publish = (event, index) => {
@@ -15,23 +16,23 @@ const publish = (event, index) => {
 
 // Create the event.
 const events = {
-  foo: pubsub.event("foo"),
-  bar: pubsub.event("bar")
+  foo: pubsub.event('foo'),
+  bar: pubsub.event('bar')
 };
 
 
 // Read in the command-line args, to determine which event to fire
 // and how many events to fire it.
 const args = process.argv.slice(2);
-const eventName = args[0] || "foo";
+const eventName = args[0] || 'foo';
 const count = parseInt(args[1]) || 1;
 
 if (events[eventName]) {
   const promises = R.times((index) => publish(events[eventName], index), count);
   Promise.all(promises)
     .then(() => {
-      console.log("");
-      // setTimeout(() => process.exit(0), 500);
+      console.log('');
+      setTimeout(() => process.exit(0), 500);
     })
 
 } else {
