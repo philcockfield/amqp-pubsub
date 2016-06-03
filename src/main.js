@@ -69,8 +69,8 @@ export default (url) => {
 
   // Store connection state.
   connecting
-    .then(() => api.isReady = true)
-    .catch(err => api.connectionError = err);
+    .then(() => { api.isReady = true; })
+    .catch(err => { api.connectionError = err; });
 
   // Finish up.
   return api;
