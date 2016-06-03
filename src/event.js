@@ -16,7 +16,7 @@ export default (event, connecting) => {
 
   // Ensure an event name was specified.
   if (R.isNil(event) || R.isEmpty(event)) { throw new Error('An `event` name must be specified.'); }
-  const EXCHANGE_NAME = `pub-sub:${ event }`;
+  const EXCHANGE_NAME = `pub-sub:${event}`;
 
   // Setup the channel and exchange.
   const initializing = new Promise((resolve, reject) => {
@@ -34,36 +34,37 @@ export default (event, connecting) => {
 
   let isListening = false;
   const listen = (handler) => new Promise((resolve, reject) => {
-    Promise.coroutine(function* await() {
-      isListening = true;
-      try {
+    (async () => {
 
-        // Note:  The queue will be deleted when the connection closes
-        //        due to the { exclusive: true } setting.
-        const channel = yield initializing;
-        const q = yield channel.assertQueue('', { exclusive: true });
+        isListening = true;
+        try {
 
-        const QUEUE_NAME = q.queue;
-        const PATTERN = '';
+          // Note:  The queue will be deleted when the connection closes
+          //        due to the { exclusive: true } setting.
+          const channel = await initializing;
+          const q = await channel.assertQueue('', { exclusive: true });
 
-        yield channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, PATTERN);
-        yield channel.consume(QUEUE_NAME, handler, { noAck: true });
+          const QUEUE_NAME = q.queue;
+          const PATTERN = '';
 
-        // Finish up.
-        resolve({});
+          await channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, PATTERN);
+          await channel.consume(QUEUE_NAME, handler, { noAck: true });
 
-      } catch (err) {
-        isListening = false;
-        reject(err);
-      }
-    }).call(this);
+          // Finish up.
+          resolve({});
+
+        } catch (err) {
+          isListening = false;
+          reject(err);
+        }
+
+    })();
   });
 
 
 
   const onEvent = (msg) => {
-    let payload;
-    payload = JSON.parse(msg.content.toString());
+    const payload = JSON.parse(msg.content.toString());
     subscriptionHandlers.forEach(func => func(payload.data));
   };
 
@@ -93,25 +94,27 @@ export default (event, connecting) => {
      */
     subscribe(func) {
       return new Promise((resolve, reject) => {
-        Promise.coroutine(function* await() {
-          if (R.is(Function, func)) {
-            try {
-              // Ensure the channel is being listened to.
-              if (!isListening) { yield listen(onEvent); }
+        (async () => {
 
-              // Store the handler.
-              subscriptionHandlers.push(func);
+            if (R.is(Function, func)) {
+              try {
+                // Ensure the channel is being listened to.
+                if (!isListening) { await listen(onEvent); }
 
-              // Finish up.
-              resolve({});
+                // Store the handler.
+                subscriptionHandlers.push(func);
 
-            } catch (e) {
-              const err = new Error(`Failed to subscribe to event '${ api.name }'. ${ e.message }`);
-              err.details = e;
-              reject(err);
+                // Finish up.
+                resolve({});
+
+              } catch (e) {
+                const err = new Error(`Failed to subscribe to event '${api.name}'. ${e.message}`);
+                err.details = e;
+                reject(err);
+              }
             }
-          }
-        }).call(this);
+
+        })();
       });
     },
 
@@ -137,7 +140,7 @@ export default (event, connecting) => {
 
           })
           .catch(e => {
-            const err = new Error(`Failed to publish event '${ api.name }'. ${ e.message }`);
+            const err = new Error(`Failed to publish event '${api.name}'. ${e.message}`);
             err.details = e;
             reject(err);
           });
@@ -147,8 +150,8 @@ export default (event, connecting) => {
 
   // Store connection state.
   initializing
-    .then(() => api.isReady = true)
-    .catch(err => api.connectionError = err);
+    .then(() => { api.isReady = true; })
+    .catch(err => { api.connectionError = err; });
 
   // Finish up.
   return api;
